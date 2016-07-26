@@ -17,8 +17,8 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def libName = 'Servant'
-def libDescription =  'Serving you GoogleApiClients however you like'
+def libName = 'servant'
+def libDescription =  'Serving you GoogleApiClients any way you like them'
 def mavenPackageType = 'aar'
 def mavenDeveloperId = 'mauin'
 def mavenDeveloperName = 'Marvin Ramin'
