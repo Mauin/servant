@@ -49,4 +49,4 @@ dependencies {
     compile "io.reactivex:rxjava:$versions.rxJava"
 }
 
-//apply form: '../publish.gradle'
+//apply from: '../publish.gradle'
