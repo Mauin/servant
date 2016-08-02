@@ -21,8 +21,10 @@ import android.content.Context;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import rx.AsyncEmitter;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -31,10 +33,10 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * The client will be disconnected once the returned {@link Observable} is unsubscribed from.
  */
-class GoogleApiClientObservable extends BaseClient implements Observable.OnSubscribe<GoogleApiClient> {
+class GoogleApiClientObservable extends BaseClient implements Action1<AsyncEmitter<GoogleApiClient>> {
 
     private final Api api;
-    private Subscriber<? super GoogleApiClient> subscriber;
+    private AsyncEmitter<GoogleApiClient> emitter;
 
     private GoogleApiClientObservable(Context context, Api api) {
         super(context);
@@ -42,26 +44,26 @@ class GoogleApiClientObservable extends BaseClient implements Observable.OnSubsc
     }
 
     static Observable<GoogleApiClient> create(Context context, Api api) {
-        return Observable.create(new GoogleApiClientObservable(context, api));
+        return Observable.fromAsync(new GoogleApiClientObservable(context, api), AsyncEmitter.BackpressureMode.NONE);
     }
 
     @Override
-    public void call(Subscriber<? super GoogleApiClient> subscriber) {
-        this.subscriber = subscriber;
+    public void call(AsyncEmitter<GoogleApiClient> emitter) {
+        this.emitter = emitter;
 
         buildClient(api);
         connect();
 
-        subscriber.add(Subscriptions.create(this::disconnect));
+        emitter.setSubscription(Subscriptions.create(this::disconnect));
     }
 
     @Override
     void onClientConnected(GoogleApiClient googleApiClient) {
-        subscriber.onNext(googleApiClient);
+        emitter.onNext(googleApiClient);
     }
 
     @Override
     void onClientError(Throwable throwable) {
-        subscriber.onError(throwable);
+        emitter.onError(throwable);
     }
 }
