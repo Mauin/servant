@@ -60,12 +60,10 @@ public abstract class GoogleApiClientSingle<T> extends BaseClient implements Sin
     }
 
     /**
-     * The action to perform once the {@link GoogleApiClient} is connected.
+     * Callback when the client is connected. Call either {@link #onSuccess(Object)} or
+     * {@link #onError(Throwable)} to emit values.
      *
-     * @param singleSubscriber the single subscriber to use for notification of
-     *                         {@link SingleSubscriber#onSuccess(Object)} or
-     *                         {@link SingleSubscriber#onError(Throwable)}
-     * @param googleApiClient  the connected client
+     * @param googleApiClient the connected client
      */
     protected abstract void onSingleClientConnected(GoogleApiClient googleApiClient);
 
