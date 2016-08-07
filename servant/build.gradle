@@ -44,7 +44,6 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:support-annotations:$versions.supportLibrary"
     compile "com.google.android.gms:play-services-base:$versions.playServices"
     compile "io.reactivex:rxjava:$versions.rxJava"
 }
