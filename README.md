@@ -11,7 +11,7 @@ RxJava.
 To use Servant in your project, add the library as a dependency in your `build.gradle` file:
 ```groovy
 dependencies {
-    compile 'com.mtramin:servant:9.4.0.0'
+    compile 'com.mtramin:servant:9.4.0.1'
 }
 ```
 
