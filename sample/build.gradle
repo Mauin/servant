@@ -42,7 +42,8 @@ android {
 }
 
 dependencies {
-    compile project(':servant')
+//    compile project(':servant')
+    compile "com.mtramin:servant:$versions.name"
 
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile "com.google.android.gms:play-services-location:$versions.playServices"
