@@ -44,7 +44,8 @@ class GoogleApiClientObservable extends BaseClient implements Action1<AsyncEmitt
     }
 
     static Observable<GoogleApiClient> create(Context context, Api api) {
-        return Observable.fromAsync(new GoogleApiClientObservable(context, api), AsyncEmitter.BackpressureMode.NONE);
+        return Observable.fromEmitter(new GoogleApiClientObservable(context, api),
+                AsyncEmitter.BackpressureMode.NONE);
     }
 
     @Override

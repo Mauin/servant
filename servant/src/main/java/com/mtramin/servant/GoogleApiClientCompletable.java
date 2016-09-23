@@ -22,26 +22,25 @@ import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import rx.Completable;
-import rx.Single;
-import rx.SingleSubscriber;
+import rx.CompletableSubscriber;
 import rx.subscriptions.Subscriptions;
 
 /**
- * Provides an interface that serves a {@link GoogleApiClient} as a {@link Single}.
+ * Provides an interface that serves a {@link GoogleApiClient} as a {@link Completable}.
  * <p>
- * Will disconnect the Client once the Single is unsubscribed from. This is also the case if the Single
- * emits anything in {@link SingleSubscriber#onSuccess(Object)}.
+ * Will disconnect the Client once the Completable is unsubscribed from. This is also the case once
+ * the Completable calls {@link CompletableSubscriber#onCompleted()}.
  */
-public abstract class GoogleApiClientCompletable extends BaseClient implements Completable.CompletableOnSubscribe {
+public abstract class GoogleApiClientCompletable extends BaseClient implements Completable.OnSubscribe {
 
-    private Completable.CompletableSubscriber completableSubscriber;
+    private CompletableSubscriber completableSubscriber;
 
     protected GoogleApiClientCompletable(Context context) {
         super(context);
     }
 
     @Override
-    public void call(Completable.CompletableSubscriber completableSubscriber) {
+    public void call(CompletableSubscriber completableSubscriber) {
         this.completableSubscriber = completableSubscriber;
 
         buildClient(getApi());
@@ -72,10 +71,17 @@ public abstract class GoogleApiClientCompletable extends BaseClient implements C
      */
     protected abstract Api getApi();
 
+    /**
+     * Call when the Completable GoogleApiClient should complete.
+     */
     protected void onCompleted() {
         completableSubscriber.onCompleted();
     }
 
+    /**
+     * Call when the Completable should error.
+     * @param throwable throwable to emit in onError.
+     */
     protected void onError(Throwable throwable) {
         completableSubscriber.onError(throwable);
     }
