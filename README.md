@@ -1,3 +1,5 @@
+[![Method count](https://img.shields.io/badge/Methods count-core: 119 | deps: 21733-e91e63.svg)](http://www.methodscount.com/?lib=com.mtramin%3Aservant%3A9.6.0.0)
+
 # Servant: Serving you GoogleApiClients so you don't have to worry about them
 
 Servant will create and manage GoogleApiClient from Google Play Services for you so you can
@@ -16,7 +18,9 @@ dependencies {
 ```
 
 To make it easier to recognize which version of Google Play Services is used Servants version
- number will always begin with the used Google Play Services version.
+ number will always begin with the used Google Play Services version. It is recommended to always
+ use the version of Servant that matches the version of the Google Play Services you use in your
+ application.
 
 ### MinSdk
 
@@ -64,8 +68,14 @@ Servant.completable(/* implement GoogleApiClientCompletable */)
 
 Servant brings the following dependencies:
 
-- RxJava
+- RxJava (v1.x)
 - Google Play Services (base) which provides GoogleApiClient
+
+Due to the Google Play Services dependency also the method count of the library seems quite high.
+However since you will include Google Play Services in your application either way. Servant only
+relies on the Google Play Services base package to have as little impact as possible.
+
+In total Servant itself has a method count of below 150 methods.
 
 ## Bugs and Feedback
 
