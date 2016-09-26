@@ -32,7 +32,7 @@ ext.versions = [
         bintrayGradlePlugin    : '1.7.1',
 
         // Dependency Versions
-        playServices           : '9.6.0',
+        playServices           : '9.6.1',
         rxJava                 : '1.2.0'
 ]
 
