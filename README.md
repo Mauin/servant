@@ -1,4 +1,4 @@
-[![Method count](https://img.shields.io/badge/Methods count-core: 119 | deps: 21733-e91e63.svg)](http://www.methodscount.com/?lib=com.mtramin%3Aservant%3A9.6.0.0)
+[![Method count](https://img.shields.io/badge/Methods count-core: 119 | deps: 21733-e91e63.svg)](http://www.methodscount.com/?lib=com.mtramin%3Aservant%3A9.6.1.0)
 
 # Servant: Serving you GoogleApiClients so you don't have to worry about them
 
@@ -13,7 +13,7 @@ RxJava.
 To use Servant in your project, add the library as a dependency in your `build.gradle` file:
 ```groovy
 dependencies {
-    compile 'com.mtramin:servant:9.6.0.0'
+    compile 'com.mtramin:servant:9.6.1.0'
 }
 ```
 
