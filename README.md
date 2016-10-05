@@ -1,5 +1,3 @@
-[![Method count](https://img.shields.io/badge/Methods count-core: 119 | deps: 21733-e91e63.svg)](http://www.methodscount.com/?lib=com.mtramin%3Aservant%3A9.6.1.0)
-
 # Servant: Serving you GoogleApiClients so you don't have to worry about them
 
 Servant will create and manage GoogleApiClient from Google Play Services for you so you can
@@ -65,6 +63,8 @@ Servant.completable(/* implement GoogleApiClientCompletable */)
 ```
 
 ## Dependencies
+
+[![Method count](https://img.shields.io/badge/Methods count-core: 119 | deps: 21733-e91e63.svg)](http://www.methodscount.com/?lib=com.mtramin%3Aservant%3A9.6.1.0)
 
 Servant brings the following dependencies:
 
