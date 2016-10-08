@@ -72,8 +72,8 @@ Servant brings the following dependencies:
 - Google Play Services (base) which provides GoogleApiClient
 
 Due to the Google Play Services dependency also the method count of the library seems quite high.
-However since you will include Google Play Services in your application either way. Servant only
-relies on the Google Play Services base package to have as little impact as possible.
+However since you will include Google Play Services in your application either way this does not really affect your method count.
+Servant only relies on the Google Play Services base package to have as little impact as possible.
 
 In total Servant itself has a method count of below 150 methods.
 
