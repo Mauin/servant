@@ -20,7 +20,6 @@ package com.mtramin.servant;
  * Exception that is thrown upon errors with the {@link com.google.android.gms.common.api.GoogleApiClient}
  * connection.
  */
-
 public class ClientException extends Throwable {
     public ClientException(String message) {
         super(message);

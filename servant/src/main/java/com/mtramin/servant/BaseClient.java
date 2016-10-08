@@ -29,29 +29,36 @@ import com.google.android.gms.common.api.GoogleApiClient;
 abstract class BaseClient {
 
     private final Context context;
-    private GoogleApiClient googleApiClient;
+    GoogleApiClient googleApiClient;
 
     BaseClient(Context context) {
         this.context = context;
     }
 
-    GoogleApiClient buildClient(Api api) {
-        googleApiClient = new GoogleApiClient.Builder(context)
-                .addApi(api)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(@Nullable Bundle bundle) {
-                        onClientConnected(googleApiClient);
-                    }
+    GoogleApiClient buildClient(GoogleApi googleApi) {
+        GoogleApiClient.Builder builder = new GoogleApiClient.Builder(context);
 
-                    @Override
-                    public void onConnectionSuspended(int i) {
-                        onClientError(new ClientException("Client connection was suspended."));
-                    }
-                })
-                .addOnConnectionFailedListener(connectionResult -> onClientError(new ClientException(connectionResult.getErrorMessage())))
-                .build();
+        if (googleApi.options() == null) {
+            builder.addApi(googleApi.api());
+        } else {
+            builder.addApi(googleApi.api(), googleApi.options());
+        }
 
+        builder.addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+            @Override
+            public void onConnected(@Nullable Bundle bundle) {
+                onClientConnected(googleApiClient);
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+                onClientError(new ClientException("Client connection was suspended."));
+            }
+        });
+        builder.addOnConnectionFailedListener(connectionResult -> onClientError(new ClientException(
+                connectionResult.getErrorMessage())));
+
+        googleApiClient = builder.build();
         return googleApiClient;
     }
 

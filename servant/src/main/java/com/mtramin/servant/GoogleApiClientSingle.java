@@ -28,35 +28,32 @@ import rx.subscriptions.Subscriptions;
 /**
  * Provides an interface that serves a {@link GoogleApiClient} as a {@link Single}.
  * <p>
- * Will disconnect the Client once the Single is unsubscribed from. This is also the case if the Single
- * emits anything in {@link SingleSubscriber#onSuccess(Object)}.
+ * Will disconnect the Client once the Single is unsubscribed from. This is also the case if the
+ * Single emits anything in {@link SingleSubscriber#onSuccess(Object)}.
  */
 public abstract class GoogleApiClientSingle<T> extends BaseClient implements Single.OnSubscribe<T> {
 
+    private final GoogleApi googleApi;
     private SingleSubscriber<? super T> singleSubscriber;
 
-    protected GoogleApiClientSingle(Context context) {
+    protected GoogleApiClientSingle(Context context, Api api) {
         super(context);
+        this.googleApi = new ApiDefinition(api);
+    }
+
+    protected GoogleApiClientSingle(Context context, Api api, Api.ApiOptions.HasOptions options) {
+        super(context);
+        this.googleApi = new ApiWithOptions(api, options);
     }
 
     @Override
     public void call(SingleSubscriber<? super T> singleSubscriber) {
         this.singleSubscriber = singleSubscriber;
 
-        buildClient(getApi());
+        buildClient(googleApi);
         connect();
 
         singleSubscriber.add(Subscriptions.create(this::disconnect));
-    }
-
-    @Override
-    void onClientConnected(GoogleApiClient googleApiClient) {
-        onSingleClientConnected(googleApiClient);
-    }
-
-    @Override
-    void onClientError(Throwable throwable) {
-        singleSubscriber.onError(throwable);
     }
 
     /**
@@ -66,11 +63,6 @@ public abstract class GoogleApiClientSingle<T> extends BaseClient implements Sin
      * @param googleApiClient the connected client
      */
     protected abstract void onSingleClientConnected(GoogleApiClient googleApiClient);
-
-    /**
-     * @return the {@link Api} that you want to use for the {@link GoogleApiClient}
-     */
-    protected abstract Api getApi();
 
     protected void onSuccess(T result) {
         if (!singleSubscriber.isUnsubscribed()) {
@@ -82,5 +74,15 @@ public abstract class GoogleApiClientSingle<T> extends BaseClient implements Sin
         if (!singleSubscriber.isUnsubscribed()) {
             singleSubscriber.onError(throwable);
         }
+    }
+
+    @Override
+    void onClientConnected(GoogleApiClient googleApiClient) {
+        onSingleClientConnected(googleApiClient);
+    }
+
+    @Override
+    void onClientError(Throwable throwable) {
+        singleSubscriber.onError(throwable);
     }
 }

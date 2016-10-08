@@ -18,6 +18,7 @@ package com.mtramin.servant;
 
 import android.content.Context;
 
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Result;
@@ -31,10 +32,17 @@ import rx.SingleSubscriber;
  * Will disconnect the client once it has emitted it's value in {@link SingleSubscriber#onSuccess(Object)}
  * or once the recipient disconnects from the Single.
  */
-public abstract class GoogleApiClientRequestSingle<T, R extends Result> extends GoogleApiClientSingle<T> {
+public abstract class GoogleApiClientRequestSingle<T, R extends Result>
+        extends GoogleApiClientSingle<T> {
 
-    protected GoogleApiClientRequestSingle(Context context) {
-        super(context.getApplicationContext());
+    protected GoogleApiClientRequestSingle(Context context, Api api) {
+        super(context.getApplicationContext(), api);
+    }
+
+    protected GoogleApiClientRequestSingle(Context context,
+                                           Api api,
+                                           Api.ApiOptions.HasOptions options) {
+        super(context.getApplicationContext(), api, options);
     }
 
     @Override
@@ -42,7 +50,8 @@ public abstract class GoogleApiClientRequestSingle<T, R extends Result> extends 
         createRequest(googleApiClient)
                 .setResultCallback(result -> {
                     if (!result.getStatus().isSuccess()) {
-                        onError(new ClientException("Error in client request. " + result.getStatus().getStatusMessage()));
+                        onError(new ClientException("Error in client request. " + result.getStatus()
+                                .getStatusMessage()));
                         return;
                     }
 

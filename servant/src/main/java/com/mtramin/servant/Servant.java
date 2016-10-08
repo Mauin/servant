@@ -29,9 +29,9 @@ import rx.functions.Action1;
 /**
  * Provides multiple ways to easily use the Google Play Services {@link GoogleApiClient}.
  * <p>
- * To create a client and use it callback=style, use {@link #actions(Context, Action1, Action1)}
+ * To create a client and use it callback=style, use {@link #actions(Context, Api, Action1, Action1)}
  * <p>
- * To retrieve a client as an {@link Observable}, use {@link #observable(Context)}.
+ * To retrieve a client as an {@link Observable}, use {@link #observable(Context, Api)}.
  * <p>
  * To use a client as a Single, call {@link #single(GoogleApiClientSingle)}
  * <p>
@@ -48,8 +48,35 @@ public class Servant {
      * @param onError           action to perform if the client throws an error
      * @see GoogleApiClientActions
      */
-    public static void actions(Context context, Api api, Action1<GoogleApiClient> onClientConnected, Action1<Throwable> onError) {
-        GoogleApiClientActions.create(context.getApplicationContext(), api, onClientConnected, onError);
+    public static void actions(Context context,
+                               Api api,
+                               Action1<GoogleApiClient> onClientConnected,
+                               Action1<Throwable> onError) {
+        GoogleApiClientActions.create(context.getApplicationContext(),
+                new ApiDefinition(api),
+                onClientConnected,
+                onError);
+    }
+
+    /**
+     * Serve a GoogleApiClient with callback actions
+     *
+     * @param context           context to use for the client
+     * @param api               api to use for the client
+     * @param options           options for the api
+     * @param onClientConnected action to perform when the client was connected
+     * @param onError           action to perform if the client throws an error
+     * @see GoogleApiClientActions
+     */
+    public static void actions(Context context,
+                               Api api,
+                               Api.ApiOptions.HasOptions options,
+                               Action1<GoogleApiClient> onClientConnected,
+                               Action1<Throwable> onError) {
+        GoogleApiClientActions.create(context.getApplicationContext(),
+                new ApiWithOptions(api, options),
+                onClientConnected,
+                onError);
     }
 
     /**
@@ -61,7 +88,22 @@ public class Servant {
      * @see GoogleApiClientObservable
      */
     public static Observable<GoogleApiClient> observable(Context context, Api api) {
-        return GoogleApiClientObservable.create(context.getApplicationContext(), api);
+        return GoogleApiClientObservable.create(context.getApplicationContext(), new ApiDefinition(api));
+    }
+
+    /**
+     * Serve an Observable GoogleApiClient
+     *
+     * @param context context to use for the client
+     * @param api     api to use for the client
+     * @param options options for the api
+     * @return Observable that will emit the client once it was successfully connected
+     * @see GoogleApiClientObservable
+     */
+    public static Observable<GoogleApiClient> observable(Context context,
+                                                         Api api,
+                                                         Api.ApiOptions.HasOptions options) {
+        return GoogleApiClientObservable.create(context.getApplicationContext(), new ApiWithOptions(api, options));
     }
 
     /**

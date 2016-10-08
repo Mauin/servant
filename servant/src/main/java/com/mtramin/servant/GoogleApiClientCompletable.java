@@ -19,6 +19,7 @@ package com.mtramin.servant;
 import android.content.Context;
 
 import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.Api.ApiOptions.HasOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import rx.Completable;
@@ -31,32 +32,30 @@ import rx.subscriptions.Subscriptions;
  * Will disconnect the Client once the Completable is unsubscribed from. This is also the case once
  * the Completable calls {@link CompletableSubscriber#onCompleted()}.
  */
-public abstract class GoogleApiClientCompletable extends BaseClient implements Completable.OnSubscribe {
+public abstract class GoogleApiClientCompletable extends BaseClient
+        implements Completable.OnSubscribe {
 
+    private final GoogleApi googleApi;
     private CompletableSubscriber completableSubscriber;
 
-    protected GoogleApiClientCompletable(Context context) {
+    protected GoogleApiClientCompletable(Context context, Api api) {
         super(context);
+        this.googleApi = new ApiDefinition(api);
+    }
+
+    protected GoogleApiClientCompletable(Context context, Api api, HasOptions options) {
+        super(context);
+        this.googleApi = new ApiWithOptions(api, options);
     }
 
     @Override
     public void call(CompletableSubscriber completableSubscriber) {
         this.completableSubscriber = completableSubscriber;
 
-        buildClient(getApi());
+        buildClient(googleApi);
         connect();
 
         completableSubscriber.onSubscribe(Subscriptions.create(this::disconnect));
-    }
-
-    @Override
-    void onClientConnected(GoogleApiClient googleApiClient) {
-        onCompletableClientConnected(googleApiClient);
-    }
-
-    @Override
-    void onClientError(Throwable throwable) {
-        completableSubscriber.onError(throwable);
     }
 
     /**
@@ -67,11 +66,6 @@ public abstract class GoogleApiClientCompletable extends BaseClient implements C
     protected abstract void onCompletableClientConnected(GoogleApiClient googleApiClient);
 
     /**
-     * @return the {@link Api} that you want to use for the {@link GoogleApiClient}
-     */
-    protected abstract Api getApi();
-
-    /**
      * Call when the Completable GoogleApiClient should complete.
      */
     protected void onCompleted() {
@@ -80,9 +74,20 @@ public abstract class GoogleApiClientCompletable extends BaseClient implements C
 
     /**
      * Call when the Completable should error.
+     *
      * @param throwable throwable to emit in onError.
      */
     protected void onError(Throwable throwable) {
+        completableSubscriber.onError(throwable);
+    }
+
+    @Override
+    void onClientConnected(GoogleApiClient googleApiClient) {
+        onCompletableClientConnected(googleApiClient);
+    }
+
+    @Override
+    void onClientError(Throwable throwable) {
         completableSubscriber.onError(throwable);
     }
 }

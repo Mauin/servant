@@ -18,7 +18,6 @@ package com.mtramin.servant;
 
 import android.content.Context;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import rx.AsyncEmitter;
@@ -33,18 +32,19 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * The client will be disconnected once the returned {@link Observable} is unsubscribed from.
  */
-class GoogleApiClientObservable extends BaseClient implements Action1<AsyncEmitter<GoogleApiClient>> {
+class GoogleApiClientObservable extends BaseClient
+        implements Action1<AsyncEmitter<GoogleApiClient>> {
 
-    private final Api api;
+    private final GoogleApi googleApi;
     private AsyncEmitter<GoogleApiClient> emitter;
 
-    private GoogleApiClientObservable(Context context, Api api) {
+    private GoogleApiClientObservable(Context context, GoogleApi googleApi) {
         super(context);
-        this.api = api;
+        this.googleApi = googleApi;
     }
 
-    static Observable<GoogleApiClient> create(Context context, Api api) {
-        return Observable.fromEmitter(new GoogleApiClientObservable(context, api),
+    static Observable<GoogleApiClient> create(Context context, GoogleApi googleApi) {
+        return Observable.fromEmitter(new GoogleApiClientObservable(context, googleApi),
                 AsyncEmitter.BackpressureMode.NONE);
     }
 
@@ -52,7 +52,7 @@ class GoogleApiClientObservable extends BaseClient implements Action1<AsyncEmitt
     public void call(AsyncEmitter<GoogleApiClient> emitter) {
         this.emitter = emitter;
 
-        buildClient(api);
+        buildClient(googleApi);
         connect();
 
         emitter.setSubscription(Subscriptions.create(this::disconnect));

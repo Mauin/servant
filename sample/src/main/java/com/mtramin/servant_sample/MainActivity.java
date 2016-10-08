@@ -16,11 +16,13 @@
 
 package com.mtramin.servant_sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.google.android.gms.common.api.Api;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.mtramin.servant.GoogleApiClientCompletable;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Subscription observableClientSubscription;
     private Subscription singleClientSubscription;
     private Subscription completableClientSubscription;
+    private Subscription singleClintWithOptionsSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         observableClientSubscription = serveObservableClient();
         singleClientSubscription = serveSingleClient();
+        singleClintWithOptionsSubscription = serveSingleClientWithOptions();
         completableClientSubscription = serveCompletableClient();
     }
 
@@ -56,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         observableClientSubscription.unsubscribe();
         singleClientSubscription.unsubscribe();
+        singleClintWithOptionsSubscription.unsubscribe();
         completableClientSubscription.unsubscribe();
         super.onStop();
     }
@@ -76,17 +81,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Subscription serveSingleClient() {
-        return Servant.single(new GoogleApiClientSingle<Boolean>(this) {
+        return Servant.single(new GoogleApiClientSingle<Boolean>(this, LocationServices.API) {
             @Override
             protected void onSingleClientConnected(GoogleApiClient googleApiClient) {
                 // Do something with the client and call onSuccess / onError
                 Log.e("Servant", "have single client");
                 onSuccess(true);
-            }
-
-            @Override
-            protected Api getApi() {
-                return LocationServices.API;
             }
         })
                 .subscribe(
@@ -95,18 +95,38 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
+    private Subscription serveSingleClientWithOptions() {
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(
+                GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        return Servant.single(new GoogleApiClientSingle<Intent>(this,
+                Auth.GOOGLE_SIGN_IN_API,
+                googleSignInOptions) {
+            @Override
+            protected void onSingleClientConnected(GoogleApiClient googleApiClient) {
+                // Do something with the client and call onSuccess / onError
+                Log.e("Servant", "have single sign-in client");
+                onSuccess(Auth.GoogleSignInApi.getSignInIntent(googleApiClient));
+            }
+        })
+                .subscribe(
+                        result -> {
+                            Log.e("Servant", "single sign-in result");
+                            startActivityForResult(result, 10293);
+                        },
+                        throwable -> Log.e("Servant", "single sign-in error", throwable)
+                );
+    }
+
     private Subscription serveCompletableClient() {
-        return Servant.completable(new GoogleApiClientCompletable(this) {
+        return Servant.completable(new GoogleApiClientCompletable(this, LocationServices.API) {
             @Override
             protected void onCompletableClientConnected(GoogleApiClient googleApiClient) {
-                // Do something with the client and call onCompleted / onError
+                // Do something with the client and call onComplete / onError
                 Log.e("Servant", "have completable client");
                 onCompleted();
-            }
-
-            @Override
-            protected Api getApi() {
-                return LocationServices.API;
             }
         })
                 .subscribe(
