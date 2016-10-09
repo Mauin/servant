@@ -63,8 +63,7 @@ Servant.completable(/* implement GoogleApiClientCompletable */)
 ```
 
 ## Dependencies
-
-[![Method count](https://img.shields.io/badge/Methods count-core: 119 | deps: 21733-e91e63.svg)](http://www.methodscount.com/?lib=com.mtramin%3Aservant%3A9.6.1.0)
+[![Method count](https://img.shields.io/badge/Methods count-core: 130 | deps: 21733-e91e63.svg)](http://www.methodscount.com/?lib=com.mtramin%3Aservant%3A9.6.1.1)
 
 Servant brings the following dependencies:
 
