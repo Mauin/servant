@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mtramin.servant;
+package com.mtramin.servant2;
 
 import android.content.Context;
 import android.os.Bundle;

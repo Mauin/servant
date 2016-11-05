@@ -11,7 +11,7 @@ RxJava.
 To use Servant in your project, add the library as a dependency in your `build.gradle` file:
 ```groovy
 dependencies {
-    compile 'com.mtramin:servant:9.8.0.0'
+    compile 'com.mtramin.servant2:servant:9.8.0.0'
 }
 ```
 
@@ -67,7 +67,7 @@ Servant.completable(/* implement GoogleApiClientCompletable */)
 
 Servant brings the following dependencies:
 
-- RxJava (v1.x)
+- RxJava (v2.x)
 - Google Play Services (base) which provides GoogleApiClient
 
 Due to the Google Play Services dependency also the method count of the library seems quite high.

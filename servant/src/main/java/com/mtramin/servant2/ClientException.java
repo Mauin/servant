@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mtramin.servant;
+package com.mtramin.servant2;
 
 /**
  * Exception that is thrown upon errors with the {@link com.google.android.gms.common.api.GoogleApiClient}

@@ -1,4 +1,4 @@
-package com.mtramin.servant;
+package com.mtramin.servant2;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

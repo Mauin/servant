@@ -25,9 +25,9 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.mtramin.servant.GoogleApiClientCompletable;
-import com.mtramin.servant.GoogleApiClientSingle;
-import com.mtramin.servant.Servant;
+import com.mtramin.servant2.GoogleApiClientCompletable;
+import com.mtramin.servant2.GoogleApiClientSingle;
+import com.mtramin.servant2.Servant;
 import com.mtramin.servant_sampler.R;
 
 import io.reactivex.disposables.Disposable;
