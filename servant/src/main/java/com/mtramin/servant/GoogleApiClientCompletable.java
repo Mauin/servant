@@ -22,21 +22,20 @@ import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.Api.ApiOptions.HasOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import rx.Completable;
-import rx.CompletableSubscriber;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
 
 /**
- * Provides an interface that serves a {@link GoogleApiClient} as a {@link Completable}.
+ * Provides an interface that serves a {@link GoogleApiClient} as a {@link io.reactivex.Completable}.
  * <p>
- * Will disconnect the Client once the Completable is unsubscribed from. This is also the case once
- * the Completable calls {@link CompletableSubscriber#onCompleted()}.
+ * Will disconnect the Client once the Completable is disposed of. This is also the case once
+ * the Completable calls {@link CompletableEmitter#onComplete()}.
  */
 public abstract class GoogleApiClientCompletable extends BaseClient
-        implements Completable.OnSubscribe {
+        implements CompletableOnSubscribe {
 
     private final GoogleApi googleApi;
-    private CompletableSubscriber completableSubscriber;
+    private CompletableEmitter completableEmitter;
 
     protected GoogleApiClientCompletable(Context context, Api api) {
         super(context);
@@ -49,13 +48,13 @@ public abstract class GoogleApiClientCompletable extends BaseClient
     }
 
     @Override
-    public void call(CompletableSubscriber completableSubscriber) {
-        this.completableSubscriber = completableSubscriber;
+    public void subscribe(CompletableEmitter emitter) throws Exception {
+        this.completableEmitter = emitter;
 
         buildClient(googleApi);
         connect();
 
-        completableSubscriber.onSubscribe(Subscriptions.create(this::disconnect));
+        emitter.setCancellable(this::disconnect);
     }
 
     /**
@@ -69,7 +68,7 @@ public abstract class GoogleApiClientCompletable extends BaseClient
      * Call when the Completable GoogleApiClient should complete.
      */
     protected void onCompleted() {
-        completableSubscriber.onCompleted();
+        completableEmitter.onComplete();
     }
 
     /**
@@ -78,7 +77,7 @@ public abstract class GoogleApiClientCompletable extends BaseClient
      * @param throwable throwable to emit in onError.
      */
     protected void onError(Throwable throwable) {
-        completableSubscriber.onError(throwable);
+        completableEmitter.onError(throwable);
     }
 
     @Override
@@ -88,6 +87,6 @@ public abstract class GoogleApiClientCompletable extends BaseClient
 
     @Override
     void onClientError(Throwable throwable) {
-        completableSubscriber.onError(throwable);
+        completableEmitter.onError(throwable);
     }
 }

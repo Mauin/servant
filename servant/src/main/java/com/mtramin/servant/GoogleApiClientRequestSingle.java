@@ -23,13 +23,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Result;
 
-import rx.SingleSubscriber;
-
 /**
- * Provides interface that can be extended to use a {@link GoogleApiClient} as a {@link rx.Single} that
+ * Provides interface that can be extended to use a {@link GoogleApiClient} as a {@link io.reactivex.Single} that
  * automatically performs the given request.
  * <p>
- * Will disconnect the client once it has emitted it's value in {@link SingleSubscriber#onSuccess(Object)}
+ * Will disconnect the client once it has emitted it's value in {@link io.reactivex.SingleEmitter#onSuccess(Object)}
  * or once the recipient disconnects from the Single.
  */
 public abstract class GoogleApiClientRequestSingle<T, R extends Result>
@@ -62,7 +60,7 @@ public abstract class GoogleApiClientRequestSingle<T, R extends Result>
     /**
      * Unwrap the result of the request that was sent to the {@link GoogleApiClient}. The given result will
      * already be checked that it was successful, otherwise a {@link ClientException} will be thrown in
-     * {@link SingleSubscriber#onError(Throwable)}.
+     * {@link io.reactivex.SingleEmitter#onError(Throwable)}.
      *
      * @param result result that was received
      * @return result you want to return

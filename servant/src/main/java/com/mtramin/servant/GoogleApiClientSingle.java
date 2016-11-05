@@ -21,20 +21,19 @@ import android.content.Context;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import rx.Single;
-import rx.SingleSubscriber;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 
 /**
- * Provides an interface that serves a {@link GoogleApiClient} as a {@link Single}.
+ * Provides an interface that serves a {@link GoogleApiClient} as a {@link io.reactivex.Single}.
  * <p>
- * Will disconnect the Client once the Single is unsubscribed from. This is also the case if the
- * Single emits anything in {@link SingleSubscriber#onSuccess(Object)}.
+ * Will disconnect the Client once the Single is disposed from. This is also the case if the
+ * Single emits anything in {@link SingleEmitter#onSuccess(Object)}.
  */
-public abstract class GoogleApiClientSingle<T> extends BaseClient implements Single.OnSubscribe<T> {
+public abstract class GoogleApiClientSingle<T> extends BaseClient implements SingleOnSubscribe<T> {
 
     private final GoogleApi googleApi;
-    private SingleSubscriber<? super T> singleSubscriber;
+    private SingleEmitter<? super T> singleEmitter;
 
     protected GoogleApiClientSingle(Context context, Api api) {
         super(context);
@@ -47,13 +46,13 @@ public abstract class GoogleApiClientSingle<T> extends BaseClient implements Sin
     }
 
     @Override
-    public void call(SingleSubscriber<? super T> singleSubscriber) {
-        this.singleSubscriber = singleSubscriber;
+    public void subscribe(SingleEmitter<T> emitter) throws Exception {
+        this.singleEmitter = emitter;
 
         buildClient(googleApi);
         connect();
 
-        singleSubscriber.add(Subscriptions.create(this::disconnect));
+        emitter.setCancellable(this::disconnect);
     }
 
     /**
@@ -65,14 +64,14 @@ public abstract class GoogleApiClientSingle<T> extends BaseClient implements Sin
     protected abstract void onSingleClientConnected(GoogleApiClient googleApiClient);
 
     protected void onSuccess(T result) {
-        if (!singleSubscriber.isUnsubscribed()) {
-            singleSubscriber.onSuccess(result);
+        if (!singleEmitter.isDisposed()) {
+            singleEmitter.onSuccess(result);
         }
     }
 
     protected void onError(Throwable throwable) {
-        if (!singleSubscriber.isUnsubscribed()) {
-            singleSubscriber.onError(throwable);
+        if (!singleEmitter.isDisposed()) {
+            singleEmitter.onError(throwable);
         }
     }
 
@@ -83,6 +82,6 @@ public abstract class GoogleApiClientSingle<T> extends BaseClient implements Sin
 
     @Override
     void onClientError(Throwable throwable) {
-        singleSubscriber.onError(throwable);
+        singleEmitter.onError(throwable);
     }
 }

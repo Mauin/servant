@@ -20,23 +20,22 @@ import android.content.Context;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import rx.AsyncEmitter;
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action1;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.Emitter;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 
 /**
  * Serves a {@link GoogleApiClient} as an Observable that will emit the Client in
- * {@link Subscriber#onNext(Object)} when it is ready to be used.
+ * {@link Emitter#onNext(Object)} when it is ready to be used.
  * <p>
- * The client will be disconnected once the returned {@link Observable} is unsubscribed from.
+ * The client will be disconnected once the returned {@link Observable} is disposed of.
  */
 class GoogleApiClientObservable extends BaseClient
-        implements Action1<AsyncEmitter<GoogleApiClient>> {
+        implements ObservableOnSubscribe<GoogleApiClient> {
 
     private final GoogleApi googleApi;
-    private AsyncEmitter<GoogleApiClient> emitter;
+    private ObservableEmitter<GoogleApiClient> emitter;
 
     private GoogleApiClientObservable(Context context, GoogleApi googleApi) {
         super(context);
@@ -44,18 +43,17 @@ class GoogleApiClientObservable extends BaseClient
     }
 
     static Observable<GoogleApiClient> create(Context context, GoogleApi googleApi) {
-        return Observable.fromEmitter(new GoogleApiClientObservable(context, googleApi),
-                AsyncEmitter.BackpressureMode.NONE);
+        return Observable.create(new GoogleApiClientObservable(context, googleApi));
     }
 
     @Override
-    public void call(AsyncEmitter<GoogleApiClient> emitter) {
+    public void subscribe(ObservableEmitter<GoogleApiClient> emitter) throws Exception {
         this.emitter = emitter;
 
         buildClient(googleApi);
         connect();
 
-        emitter.setSubscription(Subscriptions.create(this::disconnect));
+        emitter.setCancellable(this::disconnect);
     }
 
     @Override

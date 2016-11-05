@@ -30,14 +30,14 @@ import com.mtramin.servant.GoogleApiClientSingle;
 import com.mtramin.servant.Servant;
 import com.mtramin.servant_sampler.R;
 
-import rx.Subscription;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Subscription observableClientSubscription;
-    private Subscription singleClientSubscription;
-    private Subscription completableClientSubscription;
-    private Subscription singleClintWithOptionsSubscription;
+    private Disposable observableClientDisposable;
+    private Disposable singleClientDisposable;
+    private Disposable completableClientDisposable;
+    private Disposable singleClintWithOptionsDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,18 +50,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        observableClientSubscription = serveObservableClient();
-        singleClientSubscription = serveSingleClient();
-        singleClintWithOptionsSubscription = serveSingleClientWithOptions();
-        completableClientSubscription = serveCompletableClient();
+        observableClientDisposable = serveObservableClient();
+        singleClientDisposable = serveSingleClient();
+        singleClintWithOptionsDisposable = serveSingleClientWithOptions();
+        completableClientDisposable = serveCompletableClient();
     }
 
     @Override
     protected void onStop() {
-        observableClientSubscription.unsubscribe();
-        singleClientSubscription.unsubscribe();
-        singleClintWithOptionsSubscription.unsubscribe();
-        completableClientSubscription.unsubscribe();
+        observableClientDisposable.dispose();
+        singleClientDisposable.dispose();
+        singleClintWithOptionsDisposable.dispose();
+        completableClientDisposable.dispose();
         super.onStop();
     }
 
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private Subscription serveObservableClient() {
+    private Disposable serveObservableClient() {
         return Servant.observable(this, LocationServices.API)
                 .subscribe(
                         googleApiClient -> Log.e("Servant", "have observable client"),
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
-    private Subscription serveSingleClient() {
+    private Disposable serveSingleClient() {
         return Servant.single(new GoogleApiClientSingle<Boolean>(this, LocationServices.API) {
             @Override
             protected void onSingleClientConnected(GoogleApiClient googleApiClient) {
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
-    private Subscription serveSingleClientWithOptions() {
+    private Disposable serveSingleClientWithOptions() {
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(
                 GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
-    private Subscription serveCompletableClient() {
+    private Disposable serveCompletableClient() {
         return Servant.completable(new GoogleApiClientCompletable(this, LocationServices.API) {
             @Override
             protected void onCompletableClientConnected(GoogleApiClient googleApiClient) {

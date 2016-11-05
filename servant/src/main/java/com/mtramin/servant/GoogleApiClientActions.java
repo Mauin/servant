@@ -20,7 +20,7 @@ import android.content.Context;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
 
 /**
  * Implementation serving a {@link GoogleApiClient} that is usable with Actions.
@@ -30,12 +30,12 @@ import rx.functions.Action1;
  */
 class GoogleApiClientActions extends BaseClient {
 
-    private Action1<GoogleApiClient> onClientConnected;
-    private Action1<Throwable> onError;
+    private Consumer<GoogleApiClient> onClientConnected;
+    private Consumer<Throwable> onError;
 
     private GoogleApiClientActions(Context context,
-                                   Action1<GoogleApiClient> onClientConnected,
-                                   Action1<Throwable> onError,
+                                   Consumer<GoogleApiClient> onClientConnected,
+                                   Consumer<Throwable> onError,
                                    GoogleApi googleApi) {
         super(context);
         this.onClientConnected = onClientConnected;
@@ -47,19 +47,27 @@ class GoogleApiClientActions extends BaseClient {
 
     static void create(Context context,
                        GoogleApi googleApi,
-                       Action1<GoogleApiClient> onClientConnected,
-                       Action1<Throwable> onError) {
+                       Consumer<GoogleApiClient> onClientConnected,
+                       Consumer<Throwable> onError) {
         new GoogleApiClientActions(context, onClientConnected, onError, googleApi);
     }
 
     @Override
     void onClientConnected(GoogleApiClient googleApiClient) {
-        onClientConnected.call(googleApiClient);
+        try {
+            onClientConnected.accept(googleApiClient);
+        } catch (Exception e) {
+            onClientError(e);
+        }
         disconnect();
     }
 
     @Override
     void onClientError(Throwable throwable) {
-        onError.call(throwable);
+        try {
+            onError.accept(throwable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -21,15 +21,15 @@ import android.content.Context;
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 /**
  * Provides multiple ways to easily use the Google Play Services {@link GoogleApiClient}.
  * <p>
- * To create a client and use it callback=style, use {@link #actions(Context, Api, Action1, Action1)}
+ * To create a client and use it callback=style, use {@link #actions(Context, Api, Consumer, Consumer)}
  * <p>
  * To retrieve a client as an {@link Observable}, use {@link #observable(Context, Api)}.
  * <p>
@@ -50,8 +50,8 @@ public class Servant {
      */
     public static void actions(Context context,
                                Api api,
-                               Action1<GoogleApiClient> onClientConnected,
-                               Action1<Throwable> onError) {
+                               Consumer<GoogleApiClient> onClientConnected,
+                               Consumer<Throwable> onError) {
         GoogleApiClientActions.create(context.getApplicationContext(),
                 new ApiDefinition(api),
                 onClientConnected,
@@ -71,8 +71,8 @@ public class Servant {
     public static void actions(Context context,
                                Api api,
                                Api.ApiOptions.HasOptions options,
-                               Action1<GoogleApiClient> onClientConnected,
-                               Action1<Throwable> onError) {
+                               Consumer<GoogleApiClient> onClientConnected,
+                               Consumer<Throwable> onError) {
         GoogleApiClientActions.create(context.getApplicationContext(),
                 new ApiWithOptions(api, options),
                 onClientConnected,

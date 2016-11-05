@@ -33,7 +33,7 @@ ext.versions = [
 
         // Dependency Versions
         playServices           : '9.8.0',
-        rxJava                 : '1.2.0'
+        rxJava                 : '2.0.0'
 ]
 
 ext.gradlePlugins = [
